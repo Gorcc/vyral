@@ -1,0 +1,28 @@
+/* Container for the whole layout */
+.page-container {
+    display: flex;
+    position: relative;
+    width: 100%;
+    height: 100vh; /* Full screen height */
+  }
+  
+  /* Sidebar remains fixed on the left */
+ 
+  
+  /* Video grid takes the rest of the space */
+  .video-grid {
+    margin-left: 15%; /* Prevent overlap with the sidebar */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    background-color: #212121;
+    width: 85%; /* Take the remaining space after sidebar */
+    padding: 20px;
+    gap: 20px;
+
+
+  }
+
+ 
+  
