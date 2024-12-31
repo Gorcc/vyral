@@ -1,84 +1,127 @@
-import React from 'react';
-import { Camera, PlayCircle, Upload } from 'lucide-react';
-import { Button, Card } from '@/components/ui/ui-components';
-import Link from 'next/link';
+'use client'
 
-const VyralHero = () => {
+import { createClient } from '@/utils/supabase/client'
+import { useState, useEffect } from 'react'
+import Videocart from '@/components/Videocart'
+import Sidebar from '@/components/side-bar'
+
+export default function HomePage() {
+  const [videos, setVideos] = useState([])
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedTag, setSelectedTag] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const supabase = createClient()
+
+  useEffect(() => {
+    async function fetchVideos() {
+      try {
+        const { data, error } = await supabase
+          .from('videos')
+          .select('*')
+          .order('created_at', { ascending: false })
+
+        if (error) throw error
+        setVideos(data || [])
+      } catch (err) {
+        console.error('Error fetching videos:', err)
+        setError(err.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchVideos()
+  }, [])
+
+  // Filter videos based on search term and selected tag
+  const filteredVideos = videos.filter(video => {
+    const matchesSearch = video.video_name.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesTag = selectedTag ? video.tags?.includes(selectedTag) : true
+    return matchesSearch && matchesTag
+  })
+
+  // Transform the filtered videos
+  const transformedVideos = filteredVideos.map(video => ({
+    name: video.video_name || 'Untitled',
+    url: video.video_url,
+    thumbnail: video.thumbnail_url || '/placeholder-image.jpg',
+    slug: video.slug,
+    uploader_id: video.uploader_id,
+    date: video.created_at,
+    user_name: video.user_name,
+    uploader_avatar: video.uploader_avatar,
+    view_count: video.view_count
+  }))
+
+  if (loading) return <div className="container mx-auto p-4 text-white">Loading...</div>
+  if (error) return <div className="container mx-auto p-4 text-red-500">{error}</div>
+
   return (
-    <div 
-      className="relative min-h-screen flex items-center justify-center"
-      style={{ 
-        backgroundColor: '#2b2b2b',
-        color: '#e0e0e0'
-      }}
-    >
-      <div className="container mx-auto px-4 py-16 text-center">
-        <div className="max-w-3xl mx-auto">
-          <h1 
-            className="text-5xl md:text-6xl font-bold mb-6 tracking-tight"
-            style={{ 
-              color: '#df8148' 
-            }}
-          >
-            Welcome to Vyral
-          </h1>
-          
-          <p className="text-xl md:text-2xl mb-10 text-gray-300 leading-relaxed">
-            Discover, Create, and Share Your Unique Video Stories
-          </p>
-          
-          <Card 
-            className="bg-neutral-800 border-neutral-700 p-8 rounded-xl shadow-2xl max-w-md mx-auto"
-          >
-            <div className="space-y-6">
-              <div className="flex flex-col md:flex-row gap-4">
-                <Button 
-                  variant="outline" 
-                  className="w-full bg-neutral-700 hover:bg-neutral-600 text-white border-neutral-600"
+    <div className="flex min-h-screen bg-[#2b2b2b]">
+      <div className="fixed left-0 top-0 h-full">
+        <Sidebar onTagSelect={setSelectedTag} selectedTag={selectedTag} />
+      </div>
+      <main className="flex-1 ml-64">
+        <div className="p-4 w-full">
+          <div className="flex flex-col gap-6">
+            {/* Search Section */}
+            <div className="max-w-2xl mx-auto w-full">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Search videos..."
+                  className="w-full p-4 pl-12 bg-[#212121] text-white border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                />
+                <svg
+                  className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 >
-                  <PlayCircle className="mr-2" /> Watch Videos
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="w-full bg-neutral-700 hover:bg-neutral-600 text-white border-neutral-600"
-                >
-                  <Upload className="mr-2" /> Upload Content
-                </Button>
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
               </div>
-              
-              <div className="relative my-4">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-neutral-600"></div>
-                </div>
-                <div className="relative flex justify-center">
-                  <span className="px-4 bg-neutral-800 text-neutral-400">
-                    or
-                  </span>
-                </div>
-              </div>
-              
-              <Button 
-                className="w-full"
-                style={{
-                  backgroundColor: '#df8148',
-                  color: 'white',
-                }}
-              >
-                <Camera className="mr-2" /> Log In / Sign Up
-              </Button>
             </div>
-          </Card>
-          
-          <div className="mt-12 text-neutral-400">
-            <p className="text-sm">
-              Explore a world of creative video content. 
-              No credit card required.
-            </p>
+
+            {/* Title Section */}
+            <div className="flex justify-between items-center">
+              <h1 className="text-2xl font-bold text-white">
+                {selectedTag ? `${selectedTag} Videos` : 'Discover Videos'}
+              </h1>
+              {selectedTag && (
+                <button
+                  onClick={() => setSelectedTag(null)}
+                  className="text-sm text-gray-400 hover:text-white"
+                >
+                  Clear Filter
+                </button>
+              )}
+            </div>
+
+            {/* Videos Grid */}
+            {transformedVideos.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6">
+                {transformedVideos.map((video) => (
+                  <Videocart key={video.slug} video={video} />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center text-gray-400 py-8">
+                {searchTerm || selectedTag ? 'No videos found matching your criteria' : 'No videos available'}
+              </div>
+            )}
           </div>
         </div>
-      </div>
+      </main>
     </div>
-  );
-};
-
-export default VyralHero;
+  )
+}

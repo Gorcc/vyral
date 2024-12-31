@@ -1,109 +1,250 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { createClient } from "@/utils/supabase/client";
+import { createClient } from '@/utils/supabase/client'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
-// Initialize Supabase client
-const supabase = createClient();
+const AVAILABLE_TAGS = [
+  'Gaming',
+  'Music',
+  'Education',
+  'Sports',
+  'Technology',
+  'Entertainment',
+  'News',
+  'Cooking',
+  'Travel',
+  'Fitness'
+]
 
-const Page = () => {
+function generateSlug(title) {
+  const baseSlug = title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)+/g, '')
+  
+  return `${baseSlug}-${Date.now()}`
+}
 
+export default function UploadPage() {
+  const [title, setTitle] = useState('')
+  const [description, setDescription] = useState('')
+  const [videoFile, setVideoFile] = useState(null)
+  const [thumbnailFile, setThumbnailFile] = useState(null)
+  const [selectedTags, setSelectedTags] = useState([])
+  const [uploading, setUploading] = useState(false)
+  const [error, setError] = useState(null)
+  const router = useRouter()
+  const supabase = createClient()
 
-  const [userData, setUserData] = useState(null);
-  const [videoFile, setVideoFile] = useState(null);
-  const [thumbnailFile, setThumbnailFile] = useState(null);
-  const [uploading, setUploading] = useState(false);
-
-  useEffect(() => {
-    async function getData() {
-      const { data, error } = await supabase.auth.getUser();
-      if (error) {
-        console.error("Error fetching user:", error);
-        return;
+  const handleTagToggle = (tag) => {
+    setSelectedTags(prev => {
+      if (prev.includes(tag)) {
+        return prev.filter(t => t !== tag)
+      } else {
+        // Limit to 3 tags maximum
+        if (prev.length >= 3) {
+          return prev
+        }
+        return [...prev, tag]
       }
-      setUserData(data.user);
-    }
-    getData();
-  }, []);
+    })
+  }
 
-  console.log(userData);
-
-  const handleVideoChange = (e) => {
-    const selectedFile = e.target.files?.[0] || null;
-    setVideoFile(selectedFile);
-  };
-
-  const handleThumbnailChange = (e) => {
-    const selectedFile = e.target.files?.[0] || null;
-    setThumbnailFile(selectedFile);
-  };
-
-  const handleUpload = async () => {
-    if (!videoFile || !thumbnailFile) {
-      alert("Please select both a video and a thumbnail to upload.");
-      return;
-    }
-
-    setUploading(true);
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setUploading(true)
+    setError(null)
 
     try {
-      const { data: user, error: userError } = await supabase.auth.getUser();
-      if (userError || !user) {
-        throw new Error("Failed to fetch user information.");
+      if (!videoFile) {
+        throw new Error('Please select a video file')
+      }
+      if (!thumbnailFile) {
+        throw new Error('Please select a thumbnail image')
+      }
+      if (selectedTags.length === 0) {
+        throw new Error('Please select at least one tag')
       }
 
-      const { data: videoData, error: videoError } = await supabase.storage
-        .from("videos")
-        .upload(`videos/${videoFile.name}`, videoFile, { upsert: true });
+      // Get the current user
+      const { data: { user }, error: userError } = await supabase.auth.getUser()
+      if (userError) throw userError
 
-      if (videoError) {
-        throw videoError;
-      }
+      // Get user's name from users table
+      const { data: userData, error: userDataError } = await supabase
+        .from('users')
+        .select('user_name, user_avatar')
+        .eq('user_id', user.id)
+        .single()
 
+      if (userDataError) throw userDataError
+
+      
+
+      // Generate unique filenames with timestamp
+      const timestamp = Date.now()
+      const videoFileName = `${timestamp}-${videoFile.name}`
+      const thumbnailFileName = `thumbnails/${timestamp}-${thumbnailFile.name}`
+      
+      // Upload video file to the videos bucket
+      const { data: videoData, error: uploadError } = await supabase.storage
+        .from('videos')
+        .upload(videoFileName, videoFile)
+
+      if (uploadError) throw uploadError
+
+      // Upload thumbnail to the thumbnails folder in videos bucket
       const { data: thumbnailData, error: thumbnailError } = await supabase.storage
-        .from("videos")
-        .upload(`thumbnails/${thumbnailFile.name}`, thumbnailFile, { upsert: true });
+        .from('videos')
+        .upload(thumbnailFileName, thumbnailFile)
 
-      if (thumbnailError) {
-        throw thumbnailError;
-      }
+      if (thumbnailError) throw thumbnailError
 
-      const videoUrl = `https://rigidgsbhjfuhyshxjvv.supabase.co/storage/v1/object/public/videos/videos/${videoFile.name}`;
-      const thumbnailUrl = `https://rigidgsbhjfuhyshxjvv.supabase.co/storage/v1/object/public/videos/thumbnails/${thumbnailFile.name}`;
+      // Get the public URLs
+      const videoUrl = supabase.storage
+        .from('videos')
+        .getPublicUrl(videoFileName).data.publicUrl
 
-      const { data: dbData, error: dbError } = await supabase.from("thumbnails").insert([
-        {
-          sender_mail: userData?.email,
-          img: thumbnailUrl,
-        },
-      ]);
+      const thumbnailUrl = supabase.storage
+        .from('videos')
+        .getPublicUrl(thumbnailFileName).data.publicUrl
 
-      if (dbError) {
-        throw dbError;
-      }
+      // Generate a unique slug from the title
+      const slug = generateSlug(title)
 
-      alert("Video and thumbnail uploaded successfully!");
-      console.log("Uploaded video data:", videoData);
-      console.log("Uploaded thumbnail data:", thumbnailData);
-      console.log("Inserted database data:", dbData);
-    } catch (error) {
-      console.error("Error uploading video or thumbnail:", error);
-      alert("Failed to upload video and thumbnail.");
+      // Insert video details into the videos table
+      const { error: insertError } = await supabase
+        .from('videos')
+        .insert({
+          video_name: title,
+          uploader_avatar:userData.user_avatar,
+          video_descb: description,
+          uploader_id: user.id,
+          user_name: userData.user_name,
+          video_url: videoUrl,
+          thumbnail_url: thumbnailUrl,
+          slug: slug,
+          tags: selectedTags,
+          created_at: new Date().toISOString()
+        })
+
+      if (insertError) throw insertError
+
+      // Redirect to the videos page after successful upload
+      router.push('/protected')
+    } catch (err) {
+      setError(err.message)
+      console.error('Upload error:', err)
     } finally {
-      setUploading(false);
+      setUploading(false)
     }
-  };
+
+    
+  }
 
   return (
-    <div>
-      <h1>Upload Video and Thumbnail</h1>
-      <input type="file" accept="video/*" onChange={handleVideoChange} />
-      <input type="file" accept="image/*" onChange={handleThumbnailChange} />
-      <button onClick={handleUpload} disabled={uploading}>
-        {uploading ? "Uploading..." : "Upload"}
-      </button>
-    </div>
-  );
-};
+    <div className="min-h-screen bg-[#2b2b2b]">
+      <div className="container mx-auto p-4 max-w-lg">
+        <h1 className="text-2xl font-bold mb-6 text-white">Upload Video</h1>
+        
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="title" className="block text-sm font-medium text-gray-200 mb-1">
+              Video Title
+            </label>
+            <input
+              type="text"
+              id="title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full p-2 bg-[#212121] border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-white"
+              required
+            />
+          </div>
 
-export default Page;
+          <div>
+            <label htmlFor="description" className="block text-sm font-medium text-gray-200 mb-1">
+              Description
+            </label>
+            <textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full p-2 bg-[#212121] border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-white"
+              rows={4}
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-200 mb-2">
+              Tags (Select up to 3)
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {AVAILABLE_TAGS.map(tag => (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => handleTagToggle(tag)}
+                  className={`px-3 py-1 rounded-full text-sm font-medium transition-colors
+                    ${selectedTags.includes(tag)
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-[#212121] text-gray-300 hover:bg-[#2f2f2f]'
+                    }`}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+            <div className="mt-2 text-sm text-gray-400">
+              Selected: {selectedTags.length}/3
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="video" className="block text-sm font-medium text-gray-200 mb-1">
+              Video File
+            </label>
+            <input
+              type="file"
+              id="video"
+              accept="video/*"
+              onChange={(e) => setVideoFile(e.target.files?.[0])}
+              className="w-full p-2 bg-[#212121] border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-600"
+              required
+            />
+          </div>
+
+          <div>
+            <label htmlFor="thumbnail" className="block text-sm font-medium text-gray-200 mb-1">
+              Thumbnail Image
+            </label>
+            <input
+              type="file"
+              id="thumbnail"
+              accept="image/*"
+              onChange={(e) => setThumbnailFile(e.target.files?.[0])}
+              className="w-full p-2 bg-[#212121] border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-600"
+              required
+            />
+          </div>
+
+          {error && (
+            <div className="text-red-500 text-sm">
+              {error}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={uploading}
+            className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50"
+          >
+            {uploading ? 'Uploading...' : 'Upload Video'}
+          </button>
+        </form>
+      </div>
+    </div>
+  )
+}

@@ -40,7 +40,7 @@ export default function RootLayout({
                   <div className="flex gap-5 items-center font-semibold">
                     <Link href={"/"}><Image src="/vyral.png" width={200} height={100} alt="Brand Logo"></Image></Link>
                    
-                    <button>TV</button>
+                   
                     
                     
                   </div>

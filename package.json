@@ -33,6 +33,7 @@
     "sass": "^1.81.0"
   },
   "devDependencies": {
+    "@tailwindcss/line-clamp": "^0.4.4",
     "@types/node": "22.9.0",
     "@types/react": "^18.3.12",
     "@types/react-dom": "18.3.1",
