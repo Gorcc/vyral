@@ -189,7 +189,7 @@ export default function UploadPage() {
                   onClick={() => handleTagToggle(tag)}
                   className={`px-3 py-1 rounded-full text-sm font-medium transition-colors
                     ${selectedTags.includes(tag)
-                      ? 'bg-blue-500 text-white'
+                      ? 'bg-[#d57a43] text-white'
                       : 'bg-[#212121] text-gray-300 hover:bg-[#2f2f2f]'
                     }`}
                 >
@@ -206,28 +206,48 @@ export default function UploadPage() {
             <label htmlFor="video" className="block text-sm font-medium text-gray-200 mb-1">
               Video File
             </label>
-            <input
-              type="file"
-              id="video"
-              accept="video/*"
-              onChange={(e) => setVideoFile(e.target.files?.[0])}
-              className="w-full p-2 bg-[#212121] border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-600"
-              required
-            />
+            <div className="relative">
+              <input
+                type="file"
+                id="video"
+                accept="video/*"
+                onChange={(e) => setVideoFile(e.target.files?.[0])}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                required
+              />
+              <div className="w-full p-2 bg-[#212121] border border-gray-600 rounded-lg text-white flex items-center">
+                <span className="inline-flex px-4 py-2 rounded-full bg-[#d57a43] hover:bg-[#c16736] text-white text-sm font-semibold transition-colors">
+                  Choose Video
+                </span>
+                <span className="ml-3 text-gray-400">
+                  {videoFile ? videoFile.name : 'No file selected'}
+                </span>
+              </div>
+            </div>
           </div>
 
           <div>
             <label htmlFor="thumbnail" className="block text-sm font-medium text-gray-200 mb-1">
               Thumbnail Image
             </label>
-            <input
-              type="file"
-              id="thumbnail"
-              accept="image/*"
-              onChange={(e) => setThumbnailFile(e.target.files?.[0])}
-              className="w-full p-2 bg-[#212121] border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-600"
-              required
-            />
+            <div className="relative">
+              <input
+                type="file"
+                id="thumbnail"
+                accept="image/*"
+                onChange={(e) => setThumbnailFile(e.target.files?.[0])}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                required
+              />
+              <div className="w-full p-2 bg-[#212121] border border-gray-600 rounded-lg text-white flex items-center">
+                <span className="inline-flex px-4 py-2 rounded-full bg-[#d57a43] hover:bg-[#c16736] text-white text-sm font-semibold transition-colors">
+                  Choose Image
+                </span>
+                <span className="ml-3 text-gray-400">
+                  {thumbnailFile ? thumbnailFile.name : 'No file selected'}
+                </span>
+              </div>
+            </div>
           </div>
 
           {error && (
@@ -239,7 +259,7 @@ export default function UploadPage() {
           <button
             type="submit"
             disabled={uploading}
-            className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50"
+            className="w-full px-4 py-2 bg-[#d57a43] text-white rounded-lg hover:bg-[#c16736] transition-colors disabled:opacity-50"
           >
             {uploading ? 'Uploading...' : 'Upload Video'}
           </button>
