@@ -1,9 +1,9 @@
 'use client'
 
-import { createClient } from '@/utils/supabase/client'
+import { createClient } from '../utils/supabase/client'
 import { useState, useEffect } from 'react'
-import Videocart from '@/components/Videocart'
-import Sidebar from '@/components/side-bar'
+import Videocart from '../components/Videocart'
+import Sidebar from '../components/side-bar'
 
 export default function HomePage() {
   const [videos, setVideos] = useState([])

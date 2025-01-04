@@ -1,5 +1,5 @@
-import { createClient } from '@/utils/supabase/client'
-import Videocart from '@/components/Videocart'
+import { createClient } from '../../utils/supabase/client'
+import Videocart from '../../components/Videocart'
 
 export default async function VideosPage() {
   const supabase = createClient()

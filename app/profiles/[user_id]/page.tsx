@@ -1,8 +1,8 @@
 'use client'
 
-import { createClient } from '@/utils/supabase/client'
+import { createClient } from '../../../utils/supabase/client'
 import { useState, useEffect, use } from 'react'
-import Videocart from '@/components/Videocart'
+import Videocart from '../../../components/Videocart'
 
 interface Video {
   video_name: string
