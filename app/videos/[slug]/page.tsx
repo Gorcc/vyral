@@ -1,7 +1,8 @@
 'use client'
 
-import { createClient } from '@/utils/supabase/client'
-import { useEffect, useState, use } from 'react'
+import { createClient } from '../../../utils/supabase/client'
+import { useState, useEffect, use } from 'react'
+import Videocart from '../../../components/videocart'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
@@ -18,6 +19,9 @@ interface Video {
   liker_id: string[]
   disliker_id: string[]
   view_count: number
+  user_name: string
+  uploader_avatar?: string
+  tags?: string[]
 }
 
 interface User {

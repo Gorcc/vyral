@@ -2,7 +2,7 @@
 
 import { createClient } from '../../utils/supabase/client'
 import { useState, useEffect } from 'react'
-import Videocart from '../../components/Videocart'
+import Videocart from '../../components/videocart'
 import Sidebar from '../../components/side-bar'
 
 interface Video {
@@ -13,9 +13,14 @@ interface Video {
   slug: string
   uploader_id: string
   created_at: string
+  likes: number
+  dislikes: number
+  liker_id: string[]
+  disliker_id: string[]
+  view_count: number
   user_name: string
-  tags: string[]
-  uploader_avatar: string
+  uploader_avatar?: string
+  tags?: string[]
 }
 
 export default function ProtectedPage() {

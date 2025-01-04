@@ -2,7 +2,7 @@
 
 import { createClient } from '../utils/supabase/client'
 import { useState, useEffect } from 'react'
-import Videocart from '../components/Videocart'
+import Videocart from '../components/videocart'
 import Sidebar from '../components/side-bar'
 
 export default function HomePage() {
@@ -51,7 +51,12 @@ export default function HomePage() {
     date: video.created_at,
     user_name: video.user_name,
     uploader_avatar: video.uploader_avatar,
-    view_count: video.view_count
+    view_count: video.view_count || 0,
+    likes: video.likes || 0,
+    dislikes: video.dislikes || 0,
+    liker_id: video.liker_id || [],
+    disliker_id: video.disliker_id || [],
+    tags: video.tags || []
   }))
 
   if (loading) return <div className="container mx-auto p-4 text-white">Loading...</div>

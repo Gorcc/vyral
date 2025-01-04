@@ -2,17 +2,25 @@
 
 import { createClient } from '../../utils/supabase/client'
 import { useState, useEffect } from 'react'
-import Videocart from '../../components/Videocart'
+import Videocart from '../../components/videocart'
 import { useRouter } from 'next/navigation'
 
 interface Video {
   video_name: string
   video_url: string
+  video_descb?: string
   thumbnail_url?: string
   slug: string
   uploader_id: string
   created_at: string
+  likes: number
+  dislikes: number
+  liker_id: string[]
+  disliker_id: string[]
+  view_count: number
   user_name: string
+  uploader_avatar?: string
+  tags?: string[]
 }
 
 interface User {
