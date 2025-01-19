@@ -40,8 +40,8 @@ export default function Sidebar({ onTagSelect, selectedTag }) {
     <div className="w-64 min-w-[16rem] bg-[#212121] h-screen p-4 flex flex-col">
       {/* Main Navigation */}
       <div className="mb-8">
-        <button 
-          onClick={() => onTagSelect(null)} 
+        <button
+          onClick={() => onTagSelect(null)}
           className="w-full flex items-center space-x-2 text-white mb-4 hover:bg-[#2f2f2f] p-2 rounded"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -49,7 +49,7 @@ export default function Sidebar({ onTagSelect, selectedTag }) {
           </svg>
           <span>Home</span>
         </button>
-        
+
         {user && (
           <Link href="/profile" className="flex items-center space-x-2 text-white mb-4 hover:bg-[#2f2f2f] p-2 rounded">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -59,8 +59,8 @@ export default function Sidebar({ onTagSelect, selectedTag }) {
           </Link>
         )}
 
-        <Link 
-          href={user ? "/upload" : "/sign-in"} 
+        <Link
+          href={user ? "/upload" : "/sign-in"}
           onClick={handleUploadClick}
           className="flex items-center space-x-2 text-white hover:bg-[#2f2f2f] p-2 rounded"
         >
@@ -78,6 +78,20 @@ export default function Sidebar({ onTagSelect, selectedTag }) {
             <span>Sign In</span>
           </Link>
         )}
+        {user && (
+          <Link href="/recommended" className="flex items-center space-x-2 text-white mt-4 hover:bg-[#2f2f2f] p-2 rounded">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+              />
+              <circle cx="12" cy="12" r="3" strokeWidth={2} />
+            </svg>
+            <span>Recommended</span>
+          </Link>
+        )}
       </div>
 
       {/* Tags Section */}
@@ -88,11 +102,10 @@ export default function Sidebar({ onTagSelect, selectedTag }) {
             <button
               key={tag}
               onClick={() => onTagSelect(tag)}
-              className={`w-full text-left p-2 rounded transition-colors ${
-                selectedTag === tag
+              className={`w-full text-left p-2 rounded transition-colors ${selectedTag === tag
                   ? 'bg-blue-500 text-white'
                   : 'text-gray-300 hover:bg-[#2f2f2f]'
-              }`}
+                }`}
             >
               {tag}
             </button>

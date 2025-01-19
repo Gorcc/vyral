@@ -98,8 +98,14 @@ export default function ProtectedPage() {
     uploader_id: video.uploader_id,
     date: video.created_at,
     user_name: video.user_name,
-    uploader_avatar: video.uploader_avatar
-  }))
+    uploader_avatar: video.uploader_avatar,
+    view_count: video.view_count || 0,
+    likes: video.likes || 0,
+    dislikes: video.dislikes || 0,
+    liker_id: video.liker_id || [],
+    disliker_id: video.disliker_id || [],
+    tags: video.tags || []
+  })) 
 
   if (loading) return <div className="min-h-screen bg-[#2b2b2b] flex items-center justify-center text-white">Loading...</div>
   if (error) return <div className="min-h-screen bg-[#2b2b2b] flex items-center justify-center text-red-500">{error}</div>
