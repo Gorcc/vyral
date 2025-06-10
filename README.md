@@ -1,76 +1,29 @@
-# Vyral
+# Vyral - A Video Platform for Rising Creators
 
-Vyral is a YouTube-like video-sharing platform designed to empower creators by providing an accessible, user-friendly interface for uploading, watching, filtering, and searching videos. The project aims to foster inclusivity by implementing an algorithm that supports small creators, prioritizing low-view videos in recommendations.
+🏆 **Winner: Best Graduation Project Award**
 
-## Features
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)]() [![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)]() [![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white)]()
 
-- **User Registration and Authentication**: Users can sign up, log in, and manage their accounts securely.
-- **Video Uploads**: Users can upload videos with titles, descriptions, and tags.
-- **Video Playback**: Seamless video playback with a responsive design.
-- **Search and Filtering**: Advanced search and filtering options to help users find content easily.
-- **Recommendation Algorithm**: Supports small creators by prioritizing videos with fewer views.
+Vyral is an award-winning, full-stack video-sharing application developed as a final graduation project. It functions like YouTube but with a unique mission: to level the playing field for small creators. The platform's core algorithm is designed to identify and promote quality content from new and undiscovered channels, helping them gain traction and find their audience.
 
-## Technologies Used
+## 🌟 Mission & Concept
 
-### Frontend
-- **Next.js**: For server-side rendering and optimized performance.
-- **React**: For building dynamic and interactive user interfaces.
-- **HTML/CSS/JavaScript**: Core web technologies for the structure and interactivity of the platform.
-- **Sass**: For managing styles with flexibility and scalability.
-- **Tailwind CSS**: For rapid UI design and styling.
+In a world dominated by established influencers, new creators often struggle to get their content seen. Vyral was built to solve this problem. Instead of prioritizing already popular channels, our system actively pushes videos from smaller creators to the forefront, giving them a fair chance to get more views and grow their community. This project is a proof-of-concept for a more equitable video-sharing ecosystem.
 
-### Backend
-- **Supabase**: Used as the backend database solution for managing user accounts, video uploads, and metadata.
+## Key Features
 
-## Why Vyral?
+* **Video Upload & Processing:** Seamless video uploads for creators, handled via Supabase Storage.
+* **YouTube-like UI:** A familiar and intuitive interface for Browse, watching, and discovering content.
+* **Discovery Algorithm:** A custom logic that promotes videos from channels with fewer subscribers to the main feed.
+* **Viewing & Interaction:** Watch videos, like/dislike, and view channel pages.
+* **User Authentication:** Secure user registration and login for creators and viewers.
+* **Responsive Design:** A clean, responsive experience across desktop and mobile devices.
 
-Vyral was created with the vision of supporting small creators who often struggle to gain visibility in competitive platforms. By prioritizing low-view videos, Vyral offers an inclusive ecosystem where all creators have a fair chance to reach an audience.
+## Technology Stack
 
-## Setup and Installation
+This project leverages a modern, powerful tech stack for a high-performance user experience.
 
-1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   ```
+* **Frontend:** **Next.js** / **React**
+* **Backend & Database:** **Supabase** (Handles Authentication, Database, and Video Storage)
 
-2. Navigate to the project directory:
-   ```bash
-   cd vyral
-   ```
-
-3. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-4. Set up Supabase:
-   - Create a Supabase project.
-   - Configure the `.env` file with your Supabase credentials.
-
-5. Start the development server:
-   ```bash
-   npm run dev
-   ```
-
-6. Access the application at `http://localhost:3000`.
-
-## Future Improvements
-
-- Enhance the recommendation algorithm for better personalization.
-- Add social features like comments, likes, and sharing.
-- Implement monetization options for creators.
-- Optimize video compression and streaming quality.
-
-## Contribution
-
-Contributions are welcome! If you'd like to contribute, please fork the repository and submit a pull request.
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
-
----
-
-**Created by:** Deniz Görkem Ater,Efe Sılaydın,Ceyhun Efe Şeker, Atilla Çelik
-**Purpose:** Graduation Project
 
